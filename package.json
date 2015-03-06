@@ -1,0 +1,21 @@
+{
+  "name": "webrtc",
+  "version": "0.0.1",
+  "description": "playground for webrct",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "Carlos Azaustre <cazaustre@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.12.0",
+    "express": "^4.12.2",
+    "express-handlebars": "^1.2.1",
+    "socket.io": "^1.3.5",
+    "webrtc.io": "0.0.4",
+    "webrtc.io-client": "0.0.2-3",
+    "ws": "^0.7.1"
+  }
+}
