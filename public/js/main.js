@@ -1,3 +1,5 @@
+// -- Variables ----------------------------------------------------------------
+
 var videos = [];
 var PeerConnection = window.PeerConnection ||
                      window.webkitPeerConnection00 ||
@@ -5,89 +7,54 @@ var PeerConnection = window.PeerConnection ||
                      window.mozRTCPeerConnection ||
                      window.RTCPeerConnection;
 
-function init() {
+// -- Cached DOM elements
+var localVideo = document.getElementById('localVideo');
+var remoteVideo = document.getElementById('remoteVideo');
+var browserURL = window.location;
+var streamOpts = {
+  "video": { "mandatory": {}, "optional": [] },
+  "audio": true
+};
+
+// -- OnLoad function ----------------------------------------------------------
+
+(function () {
+
   if(PeerConnection) {
-    rtc.createStream({
-      "video": { "mandatory": {}, "optional": [] },
-      "audio": true
-    }, function(stream) {
-      document.getElementById('you').src = URL.createObjectURL(stream);
-      document.getElementById('you').play();
+    rtc.createStream(streamOpts, function(stream) {
+      localVideo.src = URL.createObjectURL(stream);
+      localVideo.play();
     });
-  }
-  else {
-    alert("Your browser is not supported or you have turn on flags");
+
+  } else {
+    alert("Tu navegador no soporta WebRTC :(");
   }
 
-  var room = window.location.hash.slice(1);
+  var room = browserURL.hash.slice(1);
 
-  rtc.connect("ws:" + window.location.href.substring(window.location.protocol.length).split('#')[0], room)
+  rtc.connect("ws:" + browserURL.href.substring(browserURL.protocol.length).split('#')[0], room);
 
   rtc.on('add remote stream', function(stream, socketId) {
-    console.log('Adding Remoe Stream...');
-    var clone = cloneVideo('you', socketId);
-    document.getElementById(clone.id).setAttribute("class", "");
-    rtc.attachStream(stream, clone.id);
-    subdivideVideos();
+    console.log('>>> Adding Remote Stream...')
+    var video = document.getElementById('remoteVideo');
+    video.id = "remote" + socketId;
+    videos.push(video);
+    document.getElementById(video.id).setAttribute("class", "");
+    rtc.attachStream(stream, video.id);
   });
 
   rtc.on('disconnect stream', function(data) {
-    console.log('Remove ' + data);
+    console.log('>>> Remove ' + data);
     removeVideo(data);
   });
 
-  initFullScreen();
-  initNewRoom();
-}
+})();
 
-
-function initFullScreen() {}
-
-function initNewRoom() {}
-
-
-function cloneVideo(domId, socketId) {
-  var video = document.getElementById(domId);
-  var clone = video.cloneNode(false);
-  clone.id = "remote" + socketId;
-  document.getElementById('videos').appendChild(clone);
-  videos.push(clone);
-  return clone;
-}
-
-function subdivideVideos() {
-  var perRow = getNumPerRow();
-  var numInRow = 0;
-  for(var i=0, len=videos.length; i<len; i++) {
-    var video = videos[i];
-    setWH(video, i);
-    numInRow = (numInRow + 1) % perRow;
+// -- Hang Up the stream -------------------------------------------------------
+function removeVideo(socketId) {
+  var video = document.getElementById('remote' + socketId);
+  if(video) {
+    videos.splice(videos.indexOf(video), 1);
+    video.parentNode.removeChild(video);
   }
-}
-
-function setWH(video, i) {
-  var perRow = getNumPerRow();
-  var perColumn = Math.ceil(videos.length / perRow);
-  var width = Math.floor((window.innerWidth) / perRow);
-  var height = Math.floor((window.innerHeight - 190) / perColumn);
-  video.width = width;
-  video.height = height;
-  video.style.position = 'absolute';
-  video.style.left = (i % perRow) * width + "px";
-  video.style.top = Math.floor(i / perRow) * height + "px";
-}
-
-function getNumPerRow() {
-  var len = videos.length;;;;;;
-  var biggest;
-
-  if(len % 2 === 1) {
-    len++;
-  }
-
-  biggest = Math.ceil(Math.sqrt(len));
-  while(len % biggest !== 0) {
-    biggest++;
-  }
-  return biggest;
 }
