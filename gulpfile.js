@@ -13,7 +13,7 @@ var pkg = require("./package.json");
 
 // -- Files --------------------------------------------------------------------
 
-var assets = "/static";
+var assets = "public/";
 var source = {
   styl: [
     "source/styles/normalize.styl",
@@ -53,7 +53,7 @@ gulp.task("build", function() {
 
 gulp.task("server", function() {
   nodemon({
-    script: "index.js",
+    script: "server.js",
     ext: "js",
     ignore: ".git"
   });

@@ -8,8 +8,8 @@ var PeerConnection = window.PeerConnection ||
                      window.RTCPeerConnection;
 
 // -- Cached DOM elements
-var localVideo = document.getElementById('localVideo');
-var remoteVideo = document.getElementById('remoteVideo');
+var localVideo = document.querySelector('[data-video="local"]');
+var remoteVideo = document.querySelector('[data-video="remote"]');
 var browserURL = window.location;
 var streamOpts = {
   "video": { "mandatory": {}, "optional": [] },
@@ -36,11 +36,11 @@ var streamOpts = {
 
   rtc.on('add remote stream', function(stream, socketId) {
     console.log('>>> Adding Remote Stream...')
-    var video = document.getElementById('remoteVideo');
-    video.id = "remote" + socketId;
-    videos.push(video);
-    document.getElementById(video.id).setAttribute("class", "");
-    rtc.attachStream(stream, video.id);
+    //var video = document.getElementById('remoteVideo');
+    remoteVideo.id = "remote" + socketId;
+    videos.push(remoteVideo);
+    document.getElementById(remoteVideo.id).setAttribute("class", "");
+    rtc.attachStream(stream, remoteVideo.id);
   });
 
   rtc.on('disconnect stream', function(data) {
@@ -52,9 +52,9 @@ var streamOpts = {
 
 // -- Hang Up the stream -------------------------------------------------------
 function removeVideo(socketId) {
-  var video = document.getElementById('remote' + socketId);
+  var videoToRemove = document.getElementById('remote' + socketId);
   if(video) {
-    videos.splice(videos.indexOf(video), 1);
-    video.parentNode.removeChild(video);
+    videos.splice(videos.indexOf(videoToRemove), 1);
+    videoToRemove.parentNode.removeChild(videoToRemove);
   }
 }
