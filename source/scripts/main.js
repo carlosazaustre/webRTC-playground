@@ -1,3 +1,5 @@
+var suma = require('./suma');
+
 // -- Variables ----------------------------------------------------------------
 
 var videos = [];
@@ -19,6 +21,8 @@ var streamOpts = {
 // -- OnLoad function ----------------------------------------------------------
 
 (function () {
+
+  console.log(suma(1,2));
 
   if(PeerConnection) {
     rtc.createStream(streamOpts, function(stream) {
