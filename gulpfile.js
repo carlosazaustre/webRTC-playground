@@ -19,13 +19,8 @@ var pkg = require('./package.json');
 
 var assets = "public/";
 var src = {
-  styl: [
-    "source/styles/normalize.styl",
-    "source/styles/app.*.styl"
-  ],
-  scripts: [
-    "source/scripts/*.js"
-  ]
+  styl: [ "source/styles/normalize.styl", "source/styles/app.*.styl" ],
+  scripts: "source/scripts/app.*.js"
 };
 
 var banner = [
@@ -49,17 +44,18 @@ gulp.task('styl', function() {
 });
 
 gulp.task('browserify', function() {
-  return browserify('./source/scripts/main.js')
+  return browserify('./source/scripts/app.main.js')
     .bundle()
     .pipe(source('bundle.js'))
-    .pipe(buffer())
-    .pipe(uglify())
+    //.pipe(buffer())
+    //.pipe(uglify())
     .pipe(header(banner, { pkg: pkg }))
     .pipe(gulp.dest('./public/js'));
 });
 
 gulp.task('watch', function() {
   gulp.watch(src.styl, [ "styl" ]);
+  gulp.watch(src.scripts, [ "browserify" ]);
   return;
 });
 

@@ -1,4 +1,8 @@
-var suma = require('./suma');
+"use strict";
+
+// -- Dependencies -------------------------------------------------------------
+var rtc = require('./webrtc.io');
+var io = require('socket.io-client');
 
 // -- Variables ----------------------------------------------------------------
 
@@ -22,7 +26,7 @@ var streamOpts = {
 
 (function () {
 
-  console.log(suma(1,2));
+  var socket = io();
 
   if(PeerConnection) {
     rtc.createStream(streamOpts, function(stream) {
@@ -40,7 +44,6 @@ var streamOpts = {
 
   rtc.on('add remote stream', function(stream, socketId) {
     console.log('>>> Adding Remote Stream...')
-    //var video = document.getElementById('remoteVideo');
     remoteVideo.id = "remote" + socketId;
     videos.push(remoteVideo);
     document.getElementById(remoteVideo.id).setAttribute("class", "");

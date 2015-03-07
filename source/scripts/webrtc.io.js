@@ -470,6 +470,9 @@ if (navigator.webkitGetUserMedia) {
     rtc.sendOffers();
   });
 
+
+  module.exports = rtc;
+
 }).call(this);
 
 function preferOpus(sdp) {

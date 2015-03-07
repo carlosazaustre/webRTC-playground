@@ -4,8 +4,9 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var expressHbs = require('express-handlebars');
 var app = express();
-var server = require('http').createServer(app);
+var server = require('http').Server(app);
 var webRTC = require('webrtc.io').listen(server);
+var io = require('socket.io')(server);
 
 // -- Config -------------------------------------------------------------------
 
@@ -23,31 +24,8 @@ app.get('/', function(req, res) {
 
 // -- Event Sockets ------------------------------------------------------------
 
-webRTC.rtc.on('chat_msg', function(data, socket) {
-  var roomList = webRTC.rtc.rooms[data.room] || [];
-
-  for(var i=0; i, roomList.length; i++) {
-    var socketId = roomList[i];
-
-    if(socketId !== socket.id) {
-      var soc = webRTC.rtc.getSockect(socketId);
-
-      if(soc) {
-        soc.send(JSON.stringify({
-          "eventName": 'receive_chat_msg',
-          "data": {
-            "messages": data.messages,
-            "color": data.color
-          }
-        }), function(error) {
-          if(error) {
-            console.log(error);
-          }
-        });
-      }
-    }
-  }
-
+io.on('connection', function(socket) {
+  console.log('A user connected');
 });
 
 // -- Start --------------------------------------------------------------------
