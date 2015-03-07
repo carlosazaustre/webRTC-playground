@@ -10,9 +10,8 @@ var concat = require('gulp-concat');
 var autoprefixer = require('gulp-autoprefixer');
 var header = require('gulp-header');
 var uglify = require('gulp-uglify');
-var sourcemaps = require('gulp-sourcemaps');
 var source = require('vinyl-source-stream');
-var transform = require('vinyl-transform');
+var buffer = require('vinyl-buffer');
 var browserify = require('browserify');
 var pkg = require('./package.json');
 
@@ -37,12 +36,6 @@ var banner = [
   ""
 ].join("\n");
 
-// -- Helpers ------------------------------------------------------------------
-
-var getBundleName = function() {
-  return pkg.version + '.' + pkg.name + '.' + 'min';
-}
-
 // -- Tasks --------------------------------------------------------------------
 
 gulp.task('styl', function() {
@@ -59,22 +52,12 @@ gulp.task('browserify', function() {
   return browserify('./source/scripts/main.js')
     .bundle()
     .pipe(source('bundle.js'))
-    .pipe(gulp.dest('./public/js'));
-});
-/*gulp.task('javascript', function() {
-  var browserified = transform(function(filename) {
-    var b = browserify(filename);
-    return b.bundle();
-  });
-
-  return gulp.src(source.scripts)
-    .pipe(browserified)
-    .pipe(sourcemaps.init({ loadMaps: true }))
+    .pipe(buffer())
     .pipe(uglify())
-    .pipe(sourcemaps.write('./'))
+    .pipe(header(banner, { pkg: pkg }))
     .pipe(gulp.dest('./public/js'));
 });
-*/
+
 gulp.task('watch', function() {
   gulp.watch(src.styl, [ "styl" ]);
   return;
