@@ -28,6 +28,9 @@ var streamOpts = {
 (function () {
 
   var socket = io();
+  $('form').submit(function() {
+    socket.emit('chat message', $)
+  })
 
   if(PeerConnection) {
     rtc.createStream(streamOpts, function(stream) {
